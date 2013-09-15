@@ -1,6 +1,6 @@
 // Copyright (c) 2013 Andrey Tuganov
 //
-// The zlib/libpng License
+// The zlib/libpng license
 //
 // This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -26,28 +26,28 @@
 
 class LorenzAttractorOpenCLSolver : public Solver
 {
-	friend void Solver::create(Type type);
+    friend void Solver::create(Type type);
 
-	cl::Context m_context;
-	cl::Program m_program;
-	cl::Kernel m_kernelStep;
-	cl::CommandQueue m_queue;
+    cl::Context m_context;
+    cl::Program m_program;
+    cl::Kernel m_kernelStep;
+    cl::CommandQueue m_queue;
 
-	cl::Buffer m_vboPos;
-	cl::Buffer m_vboColor;
+    cl::Buffer m_vboPos;
+    cl::Buffer m_vboColor;
 
-	std::vector <cl::Memory> m_buffers;
+    std::vector <cl::Memory> m_buffers;
 
-	void __init();
-	void __step(float time, float deltaTime);
+    void __init();
+    void __step(float time, float deltaTime);
 
-	LorenzAttractorOpenCLSolver();
-	~LorenzAttractorOpenCLSolver();
+    LorenzAttractorOpenCLSolver();
+    ~LorenzAttractorOpenCLSolver();
 
 public:
 
-	virtual void init() override;
-	virtual void step(float time, float deltaTime) override;
+    virtual void init() override;
+    virtual void step(float time, float deltaTime) override;
 
 };
 

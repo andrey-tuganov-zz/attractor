@@ -1,6 +1,6 @@
 // Copyright (c) 2013 Andrey Tuganov
 //
-// The zlib/libpng License
+// The zlib/libpng license
 //
 // This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -22,23 +22,23 @@
 
 class OpenCVFrameCaptor: public FrameCaptor
 {
-	friend void FrameCaptor::create(Type type);
+    friend void FrameCaptor::create(Type type);
 
-	cv::Mat m_frame;
+    cv::Mat m_frame;
 
-	cv::VideoWriter *m_writer;
+    cv::VideoWriter *m_writer;
 
-	void __init();
-	void __capture();
+    void __init();
+    void __capture();
 
-	OpenCVFrameCaptor();
-	~OpenCVFrameCaptor();
+    OpenCVFrameCaptor();
+    ~OpenCVFrameCaptor();
 
 public:
 
-	virtual void init() override;
-	virtual void capture() override;
-	virtual void release() override;
+    virtual void init() override;
+    virtual void capture() override;
+    virtual void release() override;
 };
 
 #endif /* OPENCVFRAMECAPTOR_H_ */

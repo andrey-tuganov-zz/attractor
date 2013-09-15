@@ -1,6 +1,6 @@
 // Copyright (c) 2013 Andrey Tuganov
 //
-// The zlib/libpng License
+// The zlib/libpng license
 //
 // This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -21,15 +21,15 @@ namespace error
 
 void throw_ex( const char *msg, const char *file, const int line )
 {
-	std::stringstream ss;
+    std::stringstream ss;
 
-	ss << msg << " in " << file << ", line " << line << std::endl;
-	throw std::runtime_error( ss.str());
+    ss << msg << " in " << file << ", line " << line << std::endl;
+    throw std::runtime_error( ss.str());
 }
 
 void throw_ex( const char *msg )
 {
-	throw std::runtime_error( msg );
+    throw std::runtime_error( msg );
 }
 
 }

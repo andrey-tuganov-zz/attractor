@@ -1,6 +1,6 @@
 // Copyright (c) 2013 Andrey Tuganov
 //
-// The zlib/libpng License
+// The zlib/libpng license
 //
 // This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -20,30 +20,30 @@ class FrameCaptor
 
 private:
 
-	FrameCaptor(const FrameCaptor &) = delete;
-	void operator=(const FrameCaptor &) = delete;
+    FrameCaptor(const FrameCaptor &) = delete;
+    void operator=(const FrameCaptor &) = delete;
 
 protected:
 
-	int m_frameID;
+    int m_frameID;
 
-	FrameCaptor();
-	virtual ~FrameCaptor();
+    FrameCaptor();
+    virtual ~FrameCaptor();
 
 public:
 
-	virtual void init() = 0;
-	virtual void capture() = 0;
-	virtual void release() = 0;
+    virtual void init() = 0;
+    virtual void capture() = 0;
+    virtual void release() = 0;
 
-	static FrameCaptor *get();
+    static FrameCaptor *get();
 
-	enum Type
-	{
-		OpenCV,
-	};
+    enum Type
+    {
+        OpenCV,
+    };
 
-	static void create(Type type);
+    static void create(Type type);
 
 };
 

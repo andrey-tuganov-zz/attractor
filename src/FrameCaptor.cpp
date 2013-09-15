@@ -1,6 +1,6 @@
 // Copyright (c) 2013 Andrey Tuganov
 //
-// The zlib/libpng License
+// The zlib/libpng license
 //
 // This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -27,27 +27,27 @@ static FrameCaptor *instance = nullptr;
 
 FrameCaptor *FrameCaptor::get()
 {
-	return instance;
+    return instance;
 }
 
 void FrameCaptor::create(Type type)
 {
-	switch ( type )
-	{
-		case OpenCV:
-			instance = new OpenCVFrameCaptor();
-			break;
-		default:
-			break;
-	}
+    switch ( type )
+    {
+        case OpenCV:
+            instance = new OpenCVFrameCaptor();
+            break;
+        default:
+            break;
+    }
 
-	if ( instance == nullptr )
-		error::throw_ex("unable to create frame captor",__FILE__,__LINE__);
+    if ( instance == nullptr )
+        error::throw_ex("unable to create frame captor",__FILE__,__LINE__);
 }
 
 FrameCaptor::FrameCaptor()
 {
-	m_frameID = -1;
+    m_frameID = -1;
 }
 
 FrameCaptor::~FrameCaptor()

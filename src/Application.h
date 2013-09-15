@@ -1,6 +1,6 @@
 // Copyright (c) 2013 Andrey Tuganov
 //
-// The zlib/libpng License
+// The zlib/libpng license
 //
 // This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -22,42 +22,42 @@ class Application
 
 protected:
 
-	GLFWwindow* m_window;
-	float m_cursorX;
-	float m_cursorY;
+    GLFWwindow* m_window;
+    float m_cursorX;
+    float m_cursorY;
 
-	float m_simTime;
-	float m_simDeltaTime;
+    float m_simTime;
+    float m_simDeltaTime;
 
 private:
 
-	Application();
-	virtual ~Application();
+    Application();
+    virtual ~Application();
 
-	Application(const Application &) = delete;
-	void operator=(const Application &) = delete;
+    Application(const Application &) = delete;
+    void operator=(const Application &) = delete;
 
-	void setupLorenzAttractor();
-	void mainLoop();
+    void setupLorenzAttractor();
+    void mainLoop();
 
 public:
 
-	static Application *get();
+    static Application *get();
 
-	enum Type
-	{
-		appParticlesDemo,
-	};
+    enum Type
+    {
+        appParticlesDemo,
+    };
 
-	static void create(Type type);
+    static void create(Type type);
 
-	void init ();
-	void run ();
+    void init ();
+    void run ();
 
-	static float getRealTime();
-	float getSimTime();
+    static float getRealTime();
+    float getSimTime();
 
-	void setCursorPos(float x, float y);
+    void setCursorPos(float x, float y);
 
 };
 

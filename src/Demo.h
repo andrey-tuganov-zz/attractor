@@ -1,6 +1,6 @@
 // Copyright (c) 2013 Andrey Tuganov
 //
-// The zlib/libpng License
+// The zlib/libpng license
 //
 // This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -20,28 +20,28 @@ class Demo
 
 private:
 
-	Demo(const Demo &) = delete;
-	void operator=(const Demo &) = delete;
+    Demo(const Demo &) = delete;
+    void operator=(const Demo &) = delete;
 
 protected:
 
-	Demo() {}
-	virtual ~Demo() {}
+    Demo() {}
+    virtual ~Demo() {}
 
 public:
 
-	static Demo *get();
+    static Demo *get();
 
-	enum Type
-	{
-		LorenzAttractor,
-	};
+    enum Type
+    {
+        LorenzAttractor,
+    };
 
-	static void create(Type type);
+    static void create(Type type);
 
-	virtual void render(float simTime) = 0;
-	virtual void update() = 0;
-	virtual void init() = 0;
+    virtual void render(float simTime) = 0;
+    virtual void update() = 0;
+    virtual void init() = 0;
 };
 
 #endif

@@ -1,6 +1,6 @@
 // Copyright (c) 2013 Andrey Tuganov
 //
-// The zlib/libpng License
+// The zlib/libpng license
 //
 // This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -33,68 +33,68 @@ namespace gltools
 /*
 GLuint loadTex2D(const string &filename)
 {
-	return SOIL_load_OGL_texture( filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
-				SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT );
+    return SOIL_load_OGL_texture( filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+                SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT );
 }
 */
 
 GLuint compileShader( const string &filename, GLenum type )
 {
 
-	ifstream file(filename.c_str());
-	if(!file.is_open())
-	{
-		string str("unable to open shader file ");
-		str += filename;
-		error::throw_ex(str.c_str(),__FILE__,__LINE__);
-	}
+    ifstream file(filename.c_str());
+    if(!file.is_open())
+    {
+        string str("unable to open shader file ");
+        str += filename;
+        error::throw_ex(str.c_str(),__FILE__,__LINE__);
+    }
 
-	GLuint shader = glCreateShader(type);
-	if (!shader)
-		error::throw_ex("unable to create shader object",__FILE__,__LINE__);
+    GLuint shader = glCreateShader(type);
+    if (!shader)
+        error::throw_ex("unable to create shader object",__FILE__,__LINE__);
 
-	stringstream ss;
-	ss << file.rdbuf();
-	file.close();
+    stringstream ss;
+    ss << file.rdbuf();
+    file.close();
 
-	string strSrc = ss.str();
+    string strSrc = ss.str();
 
-	const GLchar* charSrc[] = {strSrc.c_str()};
+    const GLchar* charSrc[] = {strSrc.c_str()};
 
-	glShaderSource(shader, 1, charSrc, nullptr);
+    glShaderSource(shader, 1, charSrc, nullptr);
 
-	glCompileShader( shader );
+    glCompileShader( shader );
 
-	GLint res;
-	glGetShaderiv( shader, GL_COMPILE_STATUS, &res );
-	if( res == GL_FALSE )
-	{
-		cerr << "Shader compile log: " << filename << endl;
+    GLint res;
+    glGetShaderiv( shader, GL_COMPILE_STATUS, &res );
+    if( res == GL_FALSE )
+    {
+        cerr << "Shader compile log: " << filename << endl;
 
-		GLint logSize;
-		glGetShaderiv( shader, GL_INFO_LOG_LENGTH, &logSize );
+        GLint logSize;
+        glGetShaderiv( shader, GL_INFO_LOG_LENGTH, &logSize );
 
-		if (logSize > 0)
-		{
-			vector <char> shaderLog(logSize);
-			GLsizei written;
-			glGetShaderInfoLog(shader, logSize, &written, shaderLog.data());
-			cerr << shaderLog.data() << endl;
-		}
+        if (logSize > 0)
+        {
+            vector <char> shaderLog(logSize);
+            GLsizei written;
+            glGetShaderInfoLog(shader, logSize, &written, shaderLog.data());
+            cerr << shaderLog.data() << endl;
+        }
 
-		glDeleteShader(shader);
+        glDeleteShader(shader);
 
-		string str("failed to compile shader ");
-		str += filename;
-		error::throw_ex(str.c_str(),__FILE__,__LINE__);
-	}
+        string str("failed to compile shader ");
+        str += filename;
+        error::throw_ex(str.c_str(),__FILE__,__LINE__);
+    }
 
-	return shader;
+    return shader;
 }
 
 ShaderContainer::~ShaderContainer()
 {
-	for_each(cbegin(),cend(),glDeleteShader);
+    for_each(cbegin(),cend(),glDeleteShader);
 }
 
 }

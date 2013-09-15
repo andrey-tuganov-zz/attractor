@@ -1,6 +1,6 @@
 // Copyright (c) 2013 Andrey Tuganov
 //
-// The zlib/libpng License
+// The zlib/libpng license
 //
 // This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -27,21 +27,21 @@ static Demo *instance = nullptr;
 
 Demo *Demo::get()
 {
-	return instance;
+    return instance;
 }
 
 void Demo::create(Type type)
 {
-	switch ( type )
-	{
-		case LorenzAttractor:
-			instance = new LorenzAttractorDemo();
-			break;
-		default:
-			break;
-	}
+    switch ( type )
+    {
+        case LorenzAttractor:
+            instance = new LorenzAttractorDemo();
+            break;
+        default:
+            break;
+    }
 
-	if ( instance == nullptr )
-		error::throw_ex("unable to create demo",__FILE__,__LINE__);
+    if ( instance == nullptr )
+        error::throw_ex("unable to create demo",__FILE__,__LINE__);
 }
 

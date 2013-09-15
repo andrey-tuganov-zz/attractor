@@ -1,6 +1,6 @@
 // Copyright (c) 2013 Andrey Tuganov
 //
-// The zlib/libpng License
+// The zlib/libpng license
 //
 // This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -20,27 +20,27 @@
 
 class LorenzAttractorDemo: public Demo
 {
-	friend void Demo::create(Type type);
+    friend void Demo::create(Type type);
 
-	GLuint m_vboPos;
-	GLuint m_vboColor;
-	GLuint m_vaoParticles;
-	GLuint m_program;
+    GLuint m_vboPos;
+    GLuint m_vboColor;
+    GLuint m_vaoParticles;
+    GLuint m_program;
 
-	std::vector<GLuint> m_fbo;
-	std::vector<GLuint> m_tex;
+    std::vector<GLuint> m_fbo;
+    std::vector<GLuint> m_tex;
 
-	GLuint m_vaoScreen;
+    GLuint m_vaoScreen;
 
-	LorenzAttractorDemo();
-	~LorenzAttractorDemo();
+    LorenzAttractorDemo();
+    ~LorenzAttractorDemo();
 
 public:
-	virtual void render(float simTime) override;
+    virtual void render(float simTime) override;
 
-	virtual void update() override;
+    virtual void update() override;
 
-	virtual void init() override;
+    virtual void init() override;
 };
 
 #endif

@@ -1,6 +1,6 @@
 // Copyright (c) 2013 Andrey Tuganov
 //
-// The zlib/libpng License
+// The zlib/libpng license
 //
 // This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -22,127 +22,127 @@
 
 class Parameters
 {
-	std::unordered_map<std::string,int> ipar;
-	std::unordered_map<std::string,GLuint> gluipar;
-	std::unordered_map<std::string,float> fpar;
-	std::unordered_map<std::string,std::string> spar;
-	std::unordered_map<std::string,uintptr_t> ppar;
+    std::unordered_map<std::string,int> ipar;
+    std::unordered_map<std::string,GLuint> gluipar;
+    std::unordered_map<std::string,float> fpar;
+    std::unordered_map<std::string,std::string> spar;
+    std::unordered_map<std::string,uintptr_t> ppar;
 
 public:
 
-	void clear()
-	{
-		ipar.clear();
-		gluipar.clear();
-		fpar.clear();
-		spar.clear();
-		ppar.clear();
-	}
+    void clear()
+    {
+        ipar.clear();
+        gluipar.clear();
+        fpar.clear();
+        spar.clear();
+        ppar.clear();
+    }
 
-	void setInt(const std::string &key, int val)
-	{
-		ipar[key] = val;
-	}
+    void setInt(const std::string &key, int val)
+    {
+        ipar[key] = val;
+    }
 
-	int getInt(const std::string &key, int def = 0) const
-	{
-		auto it = ipar.find(key);
-		if ( it != ipar.end() )
-			return it->second;
-		return def;
-	}
+    int getInt(const std::string &key, int def = 0) const
+    {
+        auto it = ipar.find(key);
+        if ( it != ipar.end() )
+            return it->second;
+        return def;
+    }
 
-	void clearInt(const std::string &key)
-	{
-		ipar.erase(key);
-	}
+    void clearInt(const std::string &key)
+    {
+        ipar.erase(key);
+    }
 
-	void setGLuint(const std::string &key, unsigned val)
-	{
-		gluipar[key] = val;
-	}
+    void setGLuint(const std::string &key, unsigned val)
+    {
+        gluipar[key] = val;
+    }
 
-	int getGLuint(const std::string &key, unsigned def = 0) const
-	{
-		auto it = gluipar.find(key);
-		if ( it != gluipar.end() )
-			return it->second;
-		return def;
-	}
+    int getGLuint(const std::string &key, unsigned def = 0) const
+    {
+        auto it = gluipar.find(key);
+        if ( it != gluipar.end() )
+            return it->second;
+        return def;
+    }
 
-	void clearGLuint(const std::string &key)
-	{
-		gluipar.erase(key);
-	}
+    void clearGLuint(const std::string &key)
+    {
+        gluipar.erase(key);
+    }
 
-	void setFloat(const std::string &key, float val)
-	{
-		fpar[key] = val;
-	}
+    void setFloat(const std::string &key, float val)
+    {
+        fpar[key] = val;
+    }
 
-	float getFloat(const std::string &key, float def = 0.f) const
-	{
-		auto it = fpar.find(key);
-		if ( it != fpar.end() )
-			return it->second;
-		return def;
-	}
+    float getFloat(const std::string &key, float def = 0.f) const
+    {
+        auto it = fpar.find(key);
+        if ( it != fpar.end() )
+            return it->second;
+        return def;
+    }
 
-	void clearFloat(const std::string &key)
-	{
-		fpar.erase(key);
-	}
+    void clearFloat(const std::string &key)
+    {
+        fpar.erase(key);
+    }
 
-	void setString(const std::string &key, const std::string &val)
-	{
-		spar[key] = val;
-	}
+    void setString(const std::string &key, const std::string &val)
+    {
+        spar[key] = val;
+    }
 
-	std::string getString(const std::string &key, std::string def = std::string() ) const
-	{
-		auto it = spar.find(key);
-		if ( it != spar.end() )
-			return it->second;
-		return def;
-	}
+    std::string getString(const std::string &key, std::string def = std::string() ) const
+    {
+        auto it = spar.find(key);
+        if ( it != spar.end() )
+            return it->second;
+        return def;
+    }
 
-	void clearString(const std::string &key)
-	{
-		spar.erase(key);
-	}
+    void clearString(const std::string &key)
+    {
+        spar.erase(key);
+    }
 
-	void setPtr(const std::string &key, void *ptr)
-	{
-		ppar[key] = (uintptr_t)ptr;
-	}
+    void setPtr(const std::string &key, void *ptr)
+    {
+        ppar[key] = (uintptr_t)ptr;
+    }
 
-	void *getPtr(const std::string &key, void *def = nullptr) const
-	{
-		auto it = ppar.find(key);
-		if ( it != ppar.end() )
-			return (void*)it->second;
-		return def;
-	}
+    void *getPtr(const std::string &key, void *def = nullptr) const
+    {
+        auto it = ppar.find(key);
+        if ( it != ppar.end() )
+            return (void*)it->second;
+        return def;
+    }
 
-	void clearPtr(const std::string &key)
-	{
-		ppar.erase(key);
-	}
+    void clearPtr(const std::string &key)
+    {
+        ppar.erase(key);
+    }
 
-	void enable(const std::string &key)
-	{
-		setInt(key,1);
-	}
+    void enable(const std::string &key)
+    {
+        setInt(key,1);
+    }
 
-	void disable(const std::string &key)
-	{
-		setInt(key,0);
-	}
+    void disable(const std::string &key)
+    {
+        setInt(key,0);
+    }
 
-	bool isEnabled(const std::string &key)
-	{
-		return getInt(key) != 0 ? true : false;
-	}
+    bool isEnabled(const std::string &key)
+    {
+        return getInt(key) != 0 ? true : false;
+    }
 };
 
 

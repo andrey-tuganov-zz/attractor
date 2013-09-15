@@ -1,6 +1,6 @@
 // Copyright (c) 2013 Andrey Tuganov
 //
-// The zlib/libpng License
+// The zlib/libpng license
 //
 // This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -23,20 +23,20 @@ using namespace std;
 
 Solver *Solver::get()
 {
-	return instance;
+    return instance;
 }
 
 void Solver::create(Type type)
 {
-	switch ( type )
-	{
-		case LorenzAttractorOpenCL:
-			instance = new LorenzAttractorOpenCLSolver();
-			break;
-		default:
-			break;
-	}
+    switch ( type )
+    {
+        case LorenzAttractorOpenCL:
+            instance = new LorenzAttractorOpenCLSolver();
+            break;
+        default:
+            break;
+    }
 
-	if ( instance == nullptr )
-		error::throw_ex("unable to create solver",__FILE__,__LINE__);
+    if ( instance == nullptr )
+        error::throw_ex("unable to create solver",__FILE__,__LINE__);
 }

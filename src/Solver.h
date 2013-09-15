@@ -1,6 +1,6 @@
 // Copyright (c) 2013 Andrey Tuganov
 //
-// The zlib/libpng License
+// The zlib/libpng license
 //
 // This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -22,28 +22,29 @@ class Solver
 
 private:
 
-	Solver(const Solver &) = delete;
-	void operator=(const Solver &) = delete;
+    Solver(const Solver &) = delete;
+    void operator=(const Solver &) = delete;
 
 protected:
 
-	Solver () {}
-	virtual ~Solver () {}
+    Solver () {}
+    virtual ~Solver () {}
 
 public:
 
-	static Solver *get();
+    static Solver *get();
 
-	enum Type
-	{
-		LorenzAttractorOpenCL,
-	};
+    enum Type
+    {
+        LorenzAttractorOpenCL,
+    };
 
-	static void create(Type type);
+    static void create(Type type);
 
-	virtual void init() = 0;
+    virtual void init() = 0;
 
-	virtual void step(float time, float deltaTime) = 0;
+    virtual void step(float time, float deltaTime) = 0;
+
 };
 
 

@@ -1,6 +1,6 @@
 // Copyright (c) 2013 Andrey Tuganov
 //
-// The zlib/libpng License
+// The zlib/libpng license
 //
 // This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -22,40 +22,40 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	global::par().setInt("windowHeight",1080);
-	global::par().setInt("windowWidth",1920);
-	global::par().setString("windowTitle","Demo AT");
+    global::par().setInt("windowHeight",1080);
+    global::par().setInt("windowWidth",1920);
+    global::par().setString("windowTitle","Demo AT");
 
-	/*
-	global::par().enable("export");
-	global::par().setString("exportFilename","/media/ext4-data/No-Backup/opengl-export/1.avi");
-	global::par().setInt("exportStartFrame",5000);
-	global::par().setInt("simulationEndFrame",20000);
-	*/
+    /*
+    global::par().enable("export");
+    global::par().setString("exportFilename","/media/ext4-data/No-Backup/opengl-export/1.avi");
+    global::par().setInt("exportStartFrame",5000);
+    global::par().setInt("simulationEndFrame",20000);
+    */
 
-	Application *app = Application::get();
-	if ( app == nullptr )
-	{
-		cerr << "ERROR: failed to create application" << endl;
-		exit( EXIT_FAILURE );
-	}
+    Application *app = Application::get();
+    if ( app == nullptr )
+    {
+        cerr << "ERROR: failed to create application" << endl;
+        exit( EXIT_FAILURE );
+    }
 
-	try
-	{
-		app->init();
+    try
+    {
+        app->init();
 
-		app->run();
-	}
-	catch(const exception &e)
-	{
-		cerr << "ERROR: " << e.what() << endl;
-	}
-	catch(...)
-	{
-		cerr << "ERROR: unknown exception" << endl;
-	}
+        app->run();
+    }
+    catch(const exception &e)
+    {
+        cerr << "ERROR: " << e.what() << endl;
+    }
+    catch(...)
+    {
+        cerr << "ERROR: unknown exception" << endl;
+    }
 
-	return 0;
+    return 0;
 }
 
 
