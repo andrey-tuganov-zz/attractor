@@ -45,6 +45,7 @@ void LorenzAttractorOpenCLSolver::init()
     }
     catch (const cl::Error &e)
     {
+        // catch OpenCL specific exceptions and rethrow
         stringstream ss;
         ss << "OpenCL error, " << e.what() << " " << e.err() << endl;
         error::throw_ex(ss.str().c_str(),__FILE__,__LINE__);
@@ -138,23 +139,29 @@ void LorenzAttractorOpenCLSolver::step(float time,float deltaTime)
     }
     catch (const cl::Error &e)
     {
-         stringstream ss;
-         ss << "OpenCL error, " << e.what() << " " << e.err() << endl;
-         error::throw_ex(ss.str().c_str(),__FILE__,__LINE__);
+        // catch OpenCL specific exceptions and rethrow
+        stringstream ss;
+        ss << "OpenCL error, " << e.what() << " " << e.err() << endl;
+        error::throw_ex(ss.str().c_str(),__FILE__,__LINE__);
     }
 }
 
 void LorenzAttractorOpenCLSolver::__step(float time, float deltaTime)
 {
+    // base particle color (will be subtly changed inside the kernel)
     float baseColor[] = {0.5f+0.2f*sinf(time*0.11f),0.5f+0.2f*sinf(time*0.14f),0.5f+0.2f*cosf(time*0.19f),0.03f};
+
+    // three coefficients of the Lorenz attractor, the forth one is time warp
     float par[] = {15.f+10.f*sinf(time*0.1f)*cosf(time*0.27f), 8.f/3.f+2.f*sinf(time*0.13f)*cosf(time*0.23f), 28.f+5.f*sinf(time*0.17f)*cosf(time*0.11f), 0.1f};
 
     bool bInterop = global::par().isEnabled("CL_GL_interop");
     if ( bInterop )
     {
+        // acquire VBOs
         m_queue.enqueueAcquireGLObjects(&m_buffers);
     }
 
+    // setup arguments and launch kernels
     m_kernelStep.setArg(0, m_vboPos);
     m_kernelStep.setArg(1, m_vboColor);
     m_kernelStep.setArg(2, 4*sizeof(float), baseColor);
@@ -162,18 +169,21 @@ void LorenzAttractorOpenCLSolver::__step(float time, float deltaTime)
     m_kernelStep.setArg(4, time);
     m_kernelStep.setArg(5, deltaTime);
 
+
     int nParticles = global::par().getInt("nParticles");
     m_queue.enqueueNDRangeKernel( m_kernelStep, cl::NullRange, cl::NDRange(nParticles), cl::NullRange);
 
     if ( bInterop )
     {
+        // release VBOs
         m_queue.enqueueReleaseGLObjects(&m_buffers);
     }
 
-    m_queue.finish();
+    m_queue.finish(); // don't let OpenGL read unfinished VBOs
 
     if ( !bInterop )
     {
+        // update particles in case of no interop (slow)
         m_queue.enqueueReadBuffer( m_vboPos, CL_TRUE, 0, 4*nParticles*sizeof(float), global::par().getPtr("pos") );
         m_queue.enqueueReadBuffer( m_vboColor, CL_TRUE, 0, 4*nParticles*sizeof(float), global::par().getPtr("color") );
     }

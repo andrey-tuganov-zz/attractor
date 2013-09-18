@@ -49,10 +49,12 @@ int main(int argc, char *argv[])
     catch(const exception &e)
     {
         cerr << "ERROR: " << e.what() << endl;
+        exit( EXIT_FAILURE );
     }
     catch(...)
     {
         cerr << "ERROR: unknown exception" << endl;
+        exit( EXIT_FAILURE );
     }
 
     return 0;

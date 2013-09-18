@@ -33,10 +33,11 @@ class LorenzAttractorOpenCLSolver : public Solver
     cl::Kernel m_kernelStep;
     cl::CommandQueue m_queue;
 
+    // memory objects
     cl::Buffer m_vboPos;
     cl::Buffer m_vboColor;
+    std::vector <cl::Memory> m_buffers; // the same memory objects, needed in vector form for interop interface
 
-    std::vector <cl::Memory> m_buffers;
 
     void __init();
     void __step(float time, float deltaTime);

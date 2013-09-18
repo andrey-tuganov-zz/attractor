@@ -75,6 +75,8 @@ void cursor_pos_callback(GLFWwindow* window, double dx,double dy)
 
 void Application::init()
 {
+    // initialize GLFW and create window, setup callbacks
+
     glfwSetErrorCallback(error_callback);
 
     if( !glfwInit() )
@@ -138,20 +140,26 @@ void Application::mainLoop()
             framesLastSecond = 0;
         }
 
+        // render and swap buffers
         Demo::get()->render(m_simTime);
 
         glfwSwapBuffers(m_window);
 
+        // export the rendered frame
         if ( FrameCaptor::get() && curFrame >= exportStartFrame )
             FrameCaptor::get()->capture();
 
+        // check if we should stop the simulation
         if ( simulationEndFrame && curFrame == simulationEndFrame )
             break;
 
+        // step simulation
         Solver::get()->step(m_simTime,m_simDeltaTime);
 
+        // exchanges information between solver and renderer if not already shared
         Demo::get()->update();
 
+        // process UI events
         glfwPollEvents();
 
         m_simTime += m_simDeltaTime;
