@@ -43,7 +43,10 @@ LorenzAttractorDemo::~LorenzAttractorDemo()
 
 void LorenzAttractorDemo::init()
 {
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // read and compile shaders, push them into the container
     gltools::ShaderContainer shaders;
+
 
     shaders.push_back( gltools::compileShader(global::par().getString("vertexShaderFilename"), GL_VERTEX_SHADER) );
     shaders.push_back( gltools::compileShader(global::par().getString("fragmentShaderFilename"), GL_FRAGMENT_SHADER) );
@@ -52,11 +55,16 @@ void LorenzAttractorDemo::init()
     if ( !geometryShaderFilename.empty() )
         shaders.push_back( gltools::compileShader(geometryShaderFilename, GL_GEOMETRY_SHADER) );
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // build shader program
+
     m_program = glCreateProgram();
     if ( !m_program )
         error::throw_ex("unable to create GLSL program",__FILE__,__LINE__);
 
-    glBindAttribLocation(m_program, 0, "pos");
+    glBindAttribLocation(m_program, 0, "vertexPos");
+    glBindAttribLocation(m_program, 1, "vertexColor");
+    glBindAttribLocation(m_program, 2, "vertexTexCoord");
 
     for ( auto it = shaders.cbegin(); it != shaders.cend(); ++it )
         glAttachShader(m_program, *it);
@@ -87,6 +95,9 @@ void LorenzAttractorDemo::init()
 
     glUseProgram(m_program);
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // create VBOs
+
     int nParticles = global::par().getInt("nParticles");
 
     glGenBuffers(1, &m_vboPos);
@@ -109,11 +120,15 @@ void LorenzAttractorDemo::init()
     glBindBuffer(GL_ARRAY_BUFFER, m_vboColor);
     glVertexAttribPointer( 1, 4, GL_FLOAT, GL_FALSE, 0, nullptr );
 
+    // let the solver know the handles for interoperation
     if ( global::par().isEnabled("CL_GL_interop") )
     {
         global::par().setGLuint("vboPos",m_vboPos);
         global::par().setGLuint("vboColor",m_vboColor);
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // set uniforms
 
     GLint loc = 0;
 
@@ -129,7 +144,8 @@ void LorenzAttractorDemo::init()
     glPointSize(1.f);
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
-    // init frame buffers
+    // init frame buffers for filtering
+
     int nFrameBuffers = 3;
     m_fbo.resize(nFrameBuffers+1);
     m_tex.resize(nFrameBuffers);
@@ -154,8 +170,9 @@ void LorenzAttractorDemo::init()
         glDrawBuffers(1, drawBuffers);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////
-    // setup a fullscreen billboard
+    // setup a fullscreen billboard for filtering
 
     GLfloat verts[] = {    -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
                         -1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 1.0f, 0.0f    };
@@ -200,11 +217,14 @@ void LorenzAttractorDemo::render(float simTime)
     int windowHeight = global::par().getInt("windowHeight");
     float aspectRatio = float(windowWidth)/float(windowHeight);
 
+    // set uniforms
     GLuint hTime = glGetUniformLocation(m_program, "time");
     glUniform1f(hTime,simTime);
 
     GLuint hMVP = glGetUniformLocation(m_program, "MVP");
     GLuint hTask = glGetUniformLocation(m_program, "task");
+
+    // set MVP
 
     float eyeDist = 100.f;
     float eyeAzimuth = simTime*0.4;
@@ -224,6 +244,7 @@ void LorenzAttractorDemo::render(float simTime)
     //loc = glGetUniformLocation(m_program, "color");
     //glUniform3fv(loc, 1, &color[0]);
 
+    // render particles
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo[0]);
     glClear(GL_COLOR_BUFFER_BIT);
     glUniform1i(hTask,0);
@@ -250,6 +271,7 @@ void LorenzAttractorDemo::render(float simTime)
 
 void LorenzAttractorDemo::update()
 {
+    // update particles in case of no interop (slow)
     bool bInterop = global::par().isEnabled("CL_GL_interop");
     if ( !bInterop )
     {
