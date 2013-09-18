@@ -251,16 +251,10 @@ void Application::setupLorenzAttractor()
     global::par().setPtr("pos",(void*)pos);
     global::par().setPtr("color",(void*)color);
 
-    Demo::create(Demo::LorenzAttractor); // would throw if failed
+    Demo::create(Demo::LorenzAttractor);
     Solver::create(Solver::LorenzAttractorOpenCL);
 
-    Demo::get()->init();
-    Solver::get()->init();
-
     if ( global::par().isEnabled("export") )
-    {
         FrameCaptor::create(FrameCaptor::OpenCV);
-        FrameCaptor::get()->init();
-    }
 }
 

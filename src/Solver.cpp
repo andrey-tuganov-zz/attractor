@@ -13,6 +13,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "Solver.h"
+#include "Demo.h"
 #include "LorenzAttractorOpenCLSolver.h"
 
 #include "error.h"
@@ -28,6 +29,9 @@ Solver *Solver::get()
 
 void Solver::create(Type type)
 {
+    if ( Demo::get() == nullptr )
+        error::throw_ex("demo must be create before solver",__FILE__,__LINE__);
+
     switch ( type )
     {
         case LorenzAttractorOpenCL:
@@ -39,4 +43,6 @@ void Solver::create(Type type)
 
     if ( instance == nullptr )
         error::throw_ex("unable to create solver",__FILE__,__LINE__);
+
+    instance->init();
 }

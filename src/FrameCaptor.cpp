@@ -43,6 +43,8 @@ void FrameCaptor::create(Type type)
 
     if ( instance == nullptr )
         error::throw_ex("unable to create frame captor",__FILE__,__LINE__);
+
+    instance->init();
 }
 
 FrameCaptor::FrameCaptor()

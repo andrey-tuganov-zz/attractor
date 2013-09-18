@@ -43,5 +43,7 @@ void Demo::create(Type type)
 
     if ( instance == nullptr )
         error::throw_ex("unable to create demo",__FILE__,__LINE__);
+
+    instance->init();
 }
 
