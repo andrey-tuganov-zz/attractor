@@ -87,15 +87,7 @@ void FrameCaptor::stopThread()
         m_stage = finishing;
     }
 
-    while(1)
-    {
-        this_thread::sleep_for(chrono::milliseconds(50));
-        {
-            lock_guard<mutex> lock(m_mutex);
-            if ( m_stage == finished )
-                break;
-        }
-    }
+    m_thread.join();
 }
 
 

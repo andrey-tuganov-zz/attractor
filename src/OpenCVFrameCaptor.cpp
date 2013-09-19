@@ -90,7 +90,7 @@ void OpenCVFrameCaptor::worker()
                 if ( m_stage == finishing )
                 {
                     m_stage = finished;
-                    break;
+                    return;
                 }
             }
             else
