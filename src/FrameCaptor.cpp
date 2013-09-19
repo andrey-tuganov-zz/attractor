@@ -49,11 +49,54 @@ void FrameCaptor::create(Type type)
 
 FrameCaptor::FrameCaptor()
 {
-    m_frameID = -1;
+    m_stage = working;
 }
 
 FrameCaptor::~FrameCaptor()
 {
 
 }
+
+void thread_entry()
+{
+    try
+    {
+        FrameCaptor::get()->worker();
+    }
+    catch(const exception &e)
+    {
+        cerr << "ERROR: " << e.what() << endl;
+        exit( EXIT_FAILURE );
+    }
+    catch(...)
+    {
+        cerr << "ERROR: unknown exception" << endl;
+        exit( EXIT_FAILURE );
+    }
+}
+
+void FrameCaptor::startThread()
+{
+    m_thread = std::thread(thread_entry);
+}
+
+void FrameCaptor::stopThread()
+{
+    {
+        lock_guard<mutex> lock(m_mutex);
+        m_stage = finishing;
+    }
+
+    while(1)
+    {
+        this_thread::sleep_for(chrono::milliseconds(50));
+        {
+            lock_guard<mutex> lock(m_mutex);
+            if ( m_stage == finished )
+                break;
+        }
+    }
+}
+
+
 

@@ -14,6 +14,7 @@
 
 __kernel void kernelStep( __global float4 *posArray,
 					__global float4 *colorArray,
+					__global float *lifetimeArray,
 					float4 baseColor,					
 					float4 par,
 					float time,
@@ -21,9 +22,18 @@ __kernel void kernelStep( __global float4 *posArray,
 {
 	int gid = get_global_id(0);
 	
-	float4 pos = posArray[gid]; 		
+	float4 pos = posArray[gid];
+	
+	lifetimeArray[gid] -= deltaTime;	
+	if ( lifetimeArray[gid] < 0.f )
+	{
+		lifetimeArray[gid] = 32.f;
+		float fgid = as_float(gid);		
+		pos = (float4) ( 5.f*sin(fgid*36245.434+pos.x), 5.f*sin(fgid*56509.678+pos.y), 64.f+sin(fgid*12655.678+pos.z), 1.f );
+	}
+	 	
 	float4 vel = (float4)(par.x*(pos.y-pos.x), pos.x*(par.z-pos.z)-pos.y, pos.y*pos.x-par.y*pos.z, 0.f);
 			
-	posArray[gid] += vel*(deltaTime*par.w);
+	posArray[gid] = pos + vel*(deltaTime*par.w);
 	colorArray[gid] = baseColor + 0.1f*fast_normalize(vel);
 }

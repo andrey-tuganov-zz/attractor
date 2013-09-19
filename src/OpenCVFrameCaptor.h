@@ -20,16 +20,19 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/video/video.hpp>
 
+#include <queue>
+
 class OpenCVFrameCaptor: public FrameCaptor
 {
     friend void FrameCaptor::create(Type type);
 
-    cv::Mat m_frame;
-
+    std::queue<cv::Mat> m_frames;
     cv::VideoWriter *m_writer;
 
     void __init();
     void __capture();
+
+    void cleanup();
 
     OpenCVFrameCaptor();
     ~OpenCVFrameCaptor();
@@ -39,6 +42,7 @@ public:
     virtual void init() override;
     virtual void capture() override;
     virtual void release() override;
+    virtual void worker() override;
 };
 
 #endif /* OPENCVFRAMECAPTOR_H_ */

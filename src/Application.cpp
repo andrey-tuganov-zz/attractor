@@ -165,6 +165,9 @@ void Application::mainLoop()
         m_simTime += m_simDeltaTime;
 
         ++curFrame;
+
+        //if ( curFrame%20 == 0 )
+        //    cout << "simTime: " << m_simTime << endl;
     }
 
     if ( FrameCaptor::get() )
@@ -205,13 +208,14 @@ void Application::setupLorenzAttractor()
 
     void *onePiece = nullptr;
     //if ( posix_memalign(&buffer, 16, 8*nParticles*sizeof(float)) || buffer == nullptr )
-    onePiece = (float*) malloc(8*nParticles*sizeof(float));
+    onePiece = (float*) malloc(9*nParticles*sizeof(float)); // float4 pos, float4 color, float lifetime
     if ( onePiece == nullptr )
         error::throw_ex("memory allocation failed",__FILE__,__LINE__);
     // TODO write a reasonable memory manager, for now just keep the memory allocated till the end of the application
 
     float *pos = (float *)onePiece;
     float *color = pos + 4*nParticles;
+    float *lifetime = pos + 8*nParticles;
 
     memset(color,0,4*nParticles*sizeof(float));
 
@@ -246,7 +250,9 @@ void Application::setupLorenzAttractor()
             {
                 for( int k = 0; k < nRows; ++k )
                 {
-                    int idx = 4*((i*nRows+k)*nRows+j);
+                    int idx = (i*nRows+k)*nRows+j;
+                    lifetime[idx] = 6.f+32.f*float(rand())/RAND_MAX;
+                    idx *= 4;
                     pos[idx+0] = side*float(2*i-nRows)/float(nRows);
                     pos[idx+1] = side*float(2*j-nRows)/float(nRows);
                     pos[idx+2] = side*float(2*k-nRows)/float(nRows);
@@ -258,6 +264,7 @@ void Application::setupLorenzAttractor()
 
     global::par().setPtr("pos",(void*)pos);
     global::par().setPtr("color",(void*)color);
+    global::par().setPtr("lifetime",(void*)lifetime);
 
     Demo::create(Demo::LorenzAttractor);
     Solver::create(Solver::LorenzAttractorOpenCL);

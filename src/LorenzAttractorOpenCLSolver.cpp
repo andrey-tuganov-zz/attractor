@@ -112,23 +112,26 @@ void LorenzAttractorOpenCLSolver::__init()
 
     m_queue = cl::CommandQueue(m_context, devices[0], 0);
 
+    int nParticles = global::par().getInt("nParticles");
+
     if ( global::par().isEnabled("CL_GL_interop") )
     {
         // init GL buffers for CLGL interop
-        m_vboPos = cl::BufferGL( m_context, CL_MEM_READ_WRITE, global::par().getGLuint("vboPos"));
-        m_vboColor = cl::BufferGL( m_context, CL_MEM_READ_WRITE, global::par().getGLuint("vboColor"));
+        m_memPos = cl::BufferGL( m_context, CL_MEM_READ_WRITE, global::par().getGLuint("vboPos"));
+        m_memColor = cl::BufferGL( m_context, CL_MEM_READ_WRITE, global::par().getGLuint("vboColor"));
 
         m_buffers.reserve(2);
-        m_buffers.push_back(m_vboPos);
-        m_buffers.push_back(m_vboColor);
+        m_buffers.push_back(m_memPos);
+        m_buffers.push_back(m_memColor);
     }
     else
     {
         // no interop
-        int nParticles = global::par().getInt("nParticles");
-        m_vboPos = cl::Buffer( m_context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, 4*nParticles*sizeof(float), global::par().getPtr("pos"));
-        m_vboColor = cl::Buffer( m_context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, 4*nParticles*sizeof(float), global::par().getPtr("color"));
+        m_memPos = cl::Buffer( m_context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, 4*nParticles*sizeof(float), global::par().getPtr("pos"));
+        m_memColor = cl::Buffer( m_context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, 4*nParticles*sizeof(float), global::par().getPtr("color"));
     }
+
+    m_memLifetime = cl::Buffer( m_context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, nParticles*sizeof(float), global::par().getPtr("lifetime"));
 }
 
 void LorenzAttractorOpenCLSolver::step(float time,float deltaTime)
@@ -162,12 +165,13 @@ void LorenzAttractorOpenCLSolver::__step(float time, float deltaTime)
     }
 
     // setup arguments and launch kernels
-    m_kernelStep.setArg(0, m_vboPos);
-    m_kernelStep.setArg(1, m_vboColor);
-    m_kernelStep.setArg(2, 4*sizeof(float), baseColor);
-    m_kernelStep.setArg(3, 4*sizeof(float), par);
-    m_kernelStep.setArg(4, time);
-    m_kernelStep.setArg(5, deltaTime);
+    m_kernelStep.setArg(0, m_memPos);
+    m_kernelStep.setArg(1, m_memColor);
+    m_kernelStep.setArg(2, m_memLifetime);
+    m_kernelStep.setArg(3, 4*sizeof(float), baseColor);
+    m_kernelStep.setArg(4, 4*sizeof(float), par);
+    m_kernelStep.setArg(5, time);
+    m_kernelStep.setArg(6, deltaTime);
 
 
     int nParticles = global::par().getInt("nParticles");
@@ -184,8 +188,8 @@ void LorenzAttractorOpenCLSolver::__step(float time, float deltaTime)
     if ( !bInterop )
     {
         // update particles in case of no interop (slow)
-        m_queue.enqueueReadBuffer( m_vboPos, CL_TRUE, 0, 4*nParticles*sizeof(float), global::par().getPtr("pos") );
-        m_queue.enqueueReadBuffer( m_vboColor, CL_TRUE, 0, 4*nParticles*sizeof(float), global::par().getPtr("color") );
+        m_queue.enqueueReadBuffer( m_memPos, CL_TRUE, 0, 4*nParticles*sizeof(float), global::par().getPtr("pos") );
+        m_queue.enqueueReadBuffer( m_memColor, CL_TRUE, 0, 4*nParticles*sizeof(float), global::par().getPtr("color") );
     }
 }
 

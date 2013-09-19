@@ -15,8 +15,26 @@
 #ifndef FRAMECAPTOR_H_
 #define FRAMECAPTOR_H_
 
+#include <thread>
+#include <mutex>
+
 class FrameCaptor
 {
+
+    std::thread m_thread;
+
+protected:
+
+    std::mutex m_mutex;
+
+    enum EStage
+    {
+        working = 0,
+        finishing = 1,
+        finished = 2,
+    };
+
+    EStage m_stage;
 
 private:
 
@@ -25,16 +43,18 @@ private:
 
 protected:
 
-    int m_frameID;
-
     FrameCaptor();
     virtual ~FrameCaptor();
+
+    void startThread();
+    void stopThread();
 
 public:
 
     virtual void init() = 0;
     virtual void capture() = 0;
     virtual void release() = 0;
+    virtual void worker() = 0;
 
     static FrameCaptor *get();
 

@@ -16,7 +16,8 @@
 
 #include <iostream>
 #include <sstream>
-#include <iomanip>
+
+#include <chrono>
 
 #include "error.h"
 #include "global.h"
@@ -31,22 +32,13 @@ OpenCVFrameCaptor::OpenCVFrameCaptor() : FrameCaptor ()
 
 OpenCVFrameCaptor::~OpenCVFrameCaptor()
 {
-    if ( m_writer )
-    {
-        m_writer->release();
-        delete m_writer;
-    }
+    cleanup();
 }
 
 void OpenCVFrameCaptor::init()
 {
     int windowWidth = global::par().getInt("windowWidth");
     int windowHeight = global::par().getInt("windowHeight");
-
-    m_frame.create(windowHeight,windowWidth,CV_8UC3);
-
-    if ( m_frame.empty() )
-        error::throw_ex("unable to initialize cv::Mat frame object",__FILE__,__LINE__);
 
     CvSize size;
     size.width = windowWidth;
@@ -56,6 +48,7 @@ void OpenCVFrameCaptor::init()
     if ( m_writer == nullptr || !m_writer->isOpened() )
         error::throw_ex("unable to initialise cv::VideoWriter",__FILE__,__LINE__);
 
+    startThread();
 }
 
 void OpenCVFrameCaptor::capture()
@@ -63,22 +56,73 @@ void OpenCVFrameCaptor::capture()
     if ( !m_writer )
         return;
 
-    glPixelStorei(GL_PACK_ALIGNMENT, (m_frame.step & 3) ? 1 : 4);
-    glPixelStorei(GL_PACK_ROW_LENGTH, m_frame.step/m_frame.elemSize());
-    glReadPixels(0, 0, m_frame.cols, m_frame.rows, GL_BGR, GL_UNSIGNED_BYTE, m_frame.data);
+    int windowWidth = global::par().getInt("windowWidth");
+    int windowHeight = global::par().getInt("windowHeight");
 
-    flip(m_frame, m_frame, 0);
+    cv::Mat frame = cv::Mat(windowHeight,windowWidth,CV_8UC3);
+    // TODO memory management to avoid constant reallocation
 
-    (*m_writer) << m_frame;
+    if ( frame.empty() )
+        error::throw_ex("unable to initialize cv::Mat frame object",__FILE__,__LINE__);
 
-    ++m_frameID;
+    glPixelStorei(GL_PACK_ALIGNMENT, (frame.step & 3) ? 1 : 4);
+    glPixelStorei(GL_PACK_ROW_LENGTH, frame.step/frame.elemSize());
+    glReadPixels(0, 0, frame.cols, frame.rows, GL_BGR, GL_UNSIGNED_BYTE, frame.data);
 
-    if ( m_frameID%100 == 0 )
-        cout << "Exporting frame " << m_frameID << endl;
+    {
+        // push frame in the queue
+        lock_guard<mutex> lock(m_mutex);
+        m_frames.push(frame); // shallow copy
+    }
 
 }
 
+void OpenCVFrameCaptor::worker()
+{
+    while(1)
+    {
+        cv::Mat frame;
+
+        {
+            lock_guard<mutex> lock(m_mutex);
+            if ( m_frames.empty() )
+            {
+                if ( m_stage == finishing )
+                {
+                    m_stage = finished;
+                    break;
+                }
+            }
+            else
+            {
+                // pop frame from the queue
+                frame = m_frames.front();
+                m_frames.pop();
+            }
+        }
+
+        if ( frame.empty() )
+        {
+            this_thread::sleep_for(chrono::milliseconds(10));
+        }
+        else
+        {
+            // write frame
+            cv::flip(frame, frame, 0);
+            (*m_writer) << frame;
+        }
+
+    }
+}
+
 void OpenCVFrameCaptor::release()
+{
+    stopThread();
+
+    cleanup();
+}
+
+void OpenCVFrameCaptor::cleanup()
 {
     if ( m_writer )
     {
@@ -86,4 +130,3 @@ void OpenCVFrameCaptor::release()
         delete m_writer;
     }
 }
-

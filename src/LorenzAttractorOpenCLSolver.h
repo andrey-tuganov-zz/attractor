@@ -34,8 +34,9 @@ class LorenzAttractorOpenCLSolver : public Solver
     cl::CommandQueue m_queue;
 
     // memory objects
-    cl::Buffer m_vboPos;
-    cl::Buffer m_vboColor;
+    cl::Buffer m_memPos;
+    cl::Buffer m_memColor;
+    cl::Buffer m_memLifetime;
     std::vector <cl::Memory> m_buffers; // the same memory objects, needed in vector form for interop interface
 
 

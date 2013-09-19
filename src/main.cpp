@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
     /*
     global::par().enable("export");
     global::par().setString("exportFilename","/media/ext4-data/No-Backup/opengl-export/1.avi");
-    global::par().setInt("exportStartFrame",5000);
-    global::par().setInt("simulationEndFrame",20000);
+    global::par().setInt("exportStartFrame",100);
+    global::par().setInt("simulationEndFrame",2000);
     */
 
     Application *app = Application::get();
