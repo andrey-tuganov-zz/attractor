@@ -24,8 +24,8 @@ out vec2 texCoord;
 uniform mat4 MVP;
 
 void main()
-{	
+{    
     texCoord = vertexTexCoord;
     color = vertexColor;
-	gl_Position = MVP*vertexPos;	
+    gl_Position = MVP*vertexPos;    
 }

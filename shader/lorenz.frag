@@ -30,19 +30,19 @@ uniform float blurPar[3] = float[]( /* #, #, */ 0.6, 0.15, 0.05 );
  
 vec4 gammaCorrection()
 {
-	float gamma = 0.1;
-	vec4 c = texture(Texture0, texCoord);
-	float l = (c.r+c.g+c.b)/3.0;
-	c.xyz *= pow(l,gamma)/l; 
-	return c;
+    float gamma = 0.1;
+    vec4 c = texture(Texture0, texCoord);
+    float l = (c.r+c.g+c.b)/3.0;
+    c.xyz *= pow(l,gamma)/l; 
+    return c;
 }
                                    
 vec4 blurX()
-{	
-	float step = 1./windowHeight;
+{    
+    float step = 1./windowHeight;
     vec4 c = blurPar[0]*texture(Texture0, texCoord);      
     for( int i = 1; i < 3; i++ )
-    {    	
+    {        
          c += blurPar[i]*texture( Texture0, texCoord + vec2(0,step*i));
          c += blurPar[i]*texture( Texture0, texCoord - vec2(0,step*i));
     }        
@@ -51,10 +51,10 @@ vec4 blurX()
 
 vec4 blurY()
 {   
-	float step = 1./windowWidth;
-	vec4 c = blurPar[0]*texture(Texture0, texCoord);      
+    float step = 1./windowWidth;
+    vec4 c = blurPar[0]*texture(Texture0, texCoord);      
     for( int i = 1; i < 3; i++ )
-    {    	
+    {        
          c += blurPar[i]*texture( Texture0, texCoord + vec2(step*i,0));
          c += blurPar[i]*texture( Texture0, texCoord - vec2(step*i,0));
     }
@@ -68,12 +68,12 @@ vec4 render()
 
 void main()
 {    
-	if ( task == 0 )
-    	FragColor = render();
+    if ( task == 0 )
+        FragColor = render();
     else if ( task == 3 )
-    	FragColor = gammaCorrection();
+        FragColor = gammaCorrection();
     else if ( task == 1 )
-    	FragColor = blurX();
+        FragColor = blurX();
     else if ( task == 2 )
-    	FragColor = blurY();    
+        FragColor = blurY();    
 }
