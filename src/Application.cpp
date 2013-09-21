@@ -33,7 +33,10 @@ static Application *instance = nullptr;
 Application *Application::get()
 {
     if(!instance)
+    {
         instance = new Application();
+        instance->init();
+    }
 
     return instance;
 }
@@ -195,8 +198,10 @@ void Application::setupLorenzAttractor()
     m_simTime = 0.f;
     m_simDeltaTime = 1.f/60.f;
 
-    int nRows = 256;
-    int nParticles = nRows*nRows*nRows;
+    int nX = 256;
+    int nY = 256;
+    int nZ = 256;
+    int nParticles = nX*nY*nZ;
 
     global::par().setInt("nParticles",nParticles);
 
@@ -205,6 +210,7 @@ void Application::setupLorenzAttractor()
 
     global::par().setString("kernelFilename","kernel/lorenz.cl");
     global::par().enable("CL_GL_interop");
+    global::par().enable("filtering");
 
     void *onePiece = nullptr;
     //if ( posix_memalign(&buffer, 16, 8*nParticles*sizeof(float)) || buffer == nullptr )
@@ -244,18 +250,18 @@ void Application::setupLorenzAttractor()
 
     {
         float side = 100.f;
-        for( int i = 0; i < nRows; ++i )
+        for( int i = 0; i < nX; ++i )
         {
-            for( int j = 0; j < nRows; ++j )
+            for( int j = 0; j < nY; ++j )
             {
-                for( int k = 0; k < nRows; ++k )
+                for( int k = 0; k < nZ; ++k )
                 {
-                    int idx = (i*nRows+k)*nRows+j;
+                    int idx = (i*nY+j)*nZ+k;
                     lifetime[idx] = 6.f+32.f*float(rand())/RAND_MAX;
                     idx *= 4;
-                    pos[idx+0] = side*float(2*i-nRows)/float(nRows);
-                    pos[idx+1] = side*float(2*j-nRows)/float(nRows);
-                    pos[idx+2] = side*float(2*k-nRows)/float(nRows);
+                    pos[idx+0] = side*float(2*i-nX)/float(nX);
+                    pos[idx+1] = side*float(2*j-nY)/float(nY);
+                    pos[idx+2] = side*float(2*k-nZ)/float(nZ);
                     pos[idx+3] = 1.f;
                 }
             }

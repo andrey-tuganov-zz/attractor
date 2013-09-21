@@ -146,61 +146,68 @@ void LorenzAttractorDemo::init()
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     // init frame buffers for filtering
 
-    int nFrameBuffers = 3;
+    int nFrameBuffers = global::par().isEnabled("filtering") ? 3 : 0;
     m_fbo.resize(nFrameBuffers+1);
     m_tex.resize(nFrameBuffers);
     m_fbo.back() = 0;
 
-    glGenFramebuffers(nFrameBuffers, m_fbo.data());
-    glGenTextures(nFrameBuffers, m_tex.data());
-
-    for( int i = 0; i < nFrameBuffers; ++i )
+    if ( nFrameBuffers )
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, m_fbo[i]);
+        glGenFramebuffers(nFrameBuffers, m_fbo.data());
 
-        if ( i > 0 )
-            glActiveTexture(GL_TEXTURE0);
+        glGenTextures(nFrameBuffers, m_tex.data());
 
-        glBindTexture(GL_TEXTURE_2D, m_tex[i]);
-        glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,windowWidth,windowHeight,0,GL_RGBA,GL_UNSIGNED_BYTE,NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex[i], 0);
-        GLenum drawBuffers[] = {GL_COLOR_ATTACHMENT0};
-        glDrawBuffers(1, drawBuffers);
+        for( int i = 0; i < nFrameBuffers; ++i )
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, m_fbo[i]);
+
+            if ( i > 0 )
+                glActiveTexture(GL_TEXTURE0);
+
+            glBindTexture(GL_TEXTURE_2D, m_tex[i]);
+            glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,windowWidth,windowHeight,0,GL_RGBA,GL_UNSIGNED_BYTE,NULL);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex[i], 0);
+            GLenum drawBuffers[] = {GL_COLOR_ATTACHMENT0};
+            glDrawBuffers(1, drawBuffers);
+        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     // setup a fullscreen billboard for filtering
 
-    GLfloat verts[] = {    -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-                        -1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 1.0f, 0.0f    };
+    if ( nFrameBuffers )
+    {
+        GLfloat verts[] = {    -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+                            -1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 1.0f, 0.0f    };
 
-    GLfloat tex_coords[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-                             0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f    };
+        GLfloat tex_coords[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+                                 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f    };
 
-    GLuint vbo[2];
-    glGenBuffers(2, vbo);
+        GLuint vbo[2];
+        glGenBuffers(2, vbo);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, 6*3*sizeof(float), verts, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+        glBufferData(GL_ARRAY_BUFFER, 6*3*sizeof(float), verts, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    glBufferData(GL_ARRAY_BUFFER, 6*2* sizeof(float), tex_coords, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+        glBufferData(GL_ARRAY_BUFFER, 6*2* sizeof(float), tex_coords, GL_STATIC_DRAW);
 
-    glGenVertexArrays( 1, &m_vaoScreen );
-    glBindVertexArray(m_vaoScreen);
+        glGenVertexArrays( 1, &m_vaoScreen );
+        glBindVertexArray(m_vaoScreen);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, nullptr );
-    glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+        glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, nullptr );
+        glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, 0, nullptr );
-    glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+        glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, 0, nullptr );
+        glEnableVertexAttribArray(2);
 
-    glBindVertexArray(0);
+        glBindVertexArray(0);
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     // enable blending
@@ -252,6 +259,8 @@ void LorenzAttractorDemo::render(float simTime)
     glBindVertexArray(m_vaoParticles);
     glDrawArrays(GL_POINTS, 0, nParticles );
 
+    glFinish();
+
     // apply filters
     for ( int i = 1; i < (int)m_fbo.size(); ++i )
     {
@@ -263,10 +272,8 @@ void LorenzAttractorDemo::render(float simTime)
         glUniformMatrix4fv(hMVP, 1, GL_FALSE, &identityMatrix[0][0]);
         glBindVertexArray(m_vaoScreen);
         glDrawArrays(GL_TRIANGLES, 0, 6);
+        glFinish();
     }
-
-    glFinish();
-
 }
 
 void LorenzAttractorDemo::update()
