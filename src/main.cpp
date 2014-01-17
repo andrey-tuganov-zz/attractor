@@ -22,8 +22,6 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    global::par().setInt("windowHeight",1080);
-    global::par().setInt("windowWidth",1920);
     global::par().setString("windowTitle","Demo AT");
 
 /*

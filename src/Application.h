@@ -26,6 +26,9 @@ protected:
     float m_cursorX;
     float m_cursorY;
 
+    float m_cursorRayOrigin[4];
+    float m_cursorRayDir[4];
+
     float m_simTime;
     float m_simDeltaTime;
 
@@ -57,7 +60,15 @@ public:
     static float getRealTime();
     float getSimTime();
 
+    void resizeWindow(int width, int height);
+    void getWindowSize(int &width, int &height) const;
+
     void setCursorPos(float x, float y);
+    void getCursorPos(float &x, float &y) const;
+    void getCursorPos01(float &x, float &y) const;
+
+    void setCursorRay(float *origin, float *dir);
+    void getCursorRay(float *origin, float *dir) const;
 
 };
 

@@ -41,6 +41,8 @@ public:
     virtual void update() override;
 
     virtual void init() override;
+
+    virtual void resizeWindow(int width, int height) override;
 };
 
 #endif

@@ -128,28 +128,15 @@ void LorenzAttractorDemo::init()
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
-    // set uniforms
-
-    GLint loc = 0;
-
-    int windowWidth = global::par().getInt("windowWidth");
-    int windowHeight = global::par().getInt("windowHeight");
-
-    loc = glGetUniformLocation(m_program, "windowWidth");
-    glUniform1f(loc,float(windowWidth));
-
-    loc = glGetUniformLocation(m_program, "windowHeight");
-    glUniform1f(loc,float(windowHeight));
-
-    glPointSize(1.f);
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
     // init frame buffers for filtering
 
     int nFrameBuffers = global::par().isEnabled("filtering") ? 3 : 0;
     m_fbo.resize(nFrameBuffers+1);
     m_tex.resize(nFrameBuffers);
     m_fbo.back() = 0;
+
+    int windowWidth = -1, windowHeight = -1;
+    Application::get()->getWindowSize(windowWidth, windowHeight);
 
     if ( nFrameBuffers )
     {
@@ -217,11 +204,20 @@ void LorenzAttractorDemo::init()
 
 }
 
+void LorenzAttractorDemo::resizeWindow(int width, int height)
+{
+    for( int i = 0; i < m_tex.size(); ++i )
+    {
+        glBindTexture(GL_TEXTURE_2D, m_tex[i]);
+        glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE,NULL);
+    }
+}
+
 void LorenzAttractorDemo::render(float simTime)
 {
     int nParticles = global::par().getInt("nParticles");
-    int windowWidth = global::par().getInt("windowWidth");
-    int windowHeight = global::par().getInt("windowHeight");
+    int windowWidth = -1, windowHeight = -1;
+    Application::get()->getWindowSize(windowWidth, windowHeight);
     float aspectRatio = float(windowWidth)/float(windowHeight);
 
     // set uniforms
@@ -234,7 +230,7 @@ void LorenzAttractorDemo::render(float simTime)
     // set MVP
 
     float eyeDist = 100.f;
-    float eyeAzimuth = simTime*0.4;
+    float eyeAzimuth = simTime*0.1f;
     float eyeZ = 25.f;
     glm::vec3 eye(eyeDist*cos(eyeAzimuth),eyeDist*sin(eyeAzimuth),eyeZ);
     //glm::vec3 eye(eyeDist,0.f,0.f);
@@ -246,10 +242,31 @@ void LorenzAttractorDemo::render(float simTime)
     glm::mat4 P = glm::perspective(25.f, aspectRatio, 10.f, 200.0f);
     glm::mat4 MVP = P*V*M;
 
+    // set cursor ray
+    float cursorX = 0.f, cursorY = 0.f;
+    Application::get()->getCursorPos01(cursorX, cursorY);
+    cursorX = cursorX*2.f-1.f;
+    cursorY = 1.f-cursorY*2.f;
+    glm::vec4 rayFront(cursorX,cursorY,-1.f,1.f);
+    glm::vec4 rayBack(cursorX,cursorY,1.f,1.f);
+    glm::mat4 invMVP = glm::inverse(MVP);
+    rayFront = invMVP*rayFront;
+    rayBack = invMVP*rayBack;
+    rayFront = rayFront/rayFront.w;
+    rayBack = rayBack/rayBack.w;
+    glm::vec4 rayDir = glm::normalize(rayBack-rayFront);
+    Application::get()->setCursorRay(&rayFront.x,&rayDir.x);
+
     //float hue = 180.f*(1.f+sin(time*0.1f));
     //glm::vec3 color = glm::rgbColor(glm::vec3(hue,1.f,1.f));
     //loc = glGetUniformLocation(m_program, "color");
     //glUniform3fv(loc, 1, &color[0]);
+
+    GLuint hWindowWidth = glGetUniformLocation(m_program, "windowWidth");
+    glUniform1f(hWindowWidth,float(windowWidth));
+
+    GLuint hWindowHeight = glGetUniformLocation(m_program, "windowHeight");
+    glUniform1f(hWindowHeight,float(windowHeight));
 
     // render particles
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo[0]);
@@ -257,6 +274,7 @@ void LorenzAttractorDemo::render(float simTime)
     glUniform1i(hTask,0);
     glUniformMatrix4fv(hMVP, 1, GL_FALSE, &MVP[0][0]);
     glBindVertexArray(m_vaoParticles);
+    glPointSize(1.f);
     glDrawArrays(GL_POINTS, 0, nParticles );
 
     glFinish();

@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <cstring>
+#include <memory>
 
 #include "Application.h"
 #include "LorenzAttractorDemo.h"
@@ -76,6 +77,19 @@ void cursor_pos_callback(GLFWwindow* window, double dx,double dy)
         Application::get()->setCursorPos(float(dx),float(dy));
 }
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    if (Application::get())
+            Application::get()->resizeWindow(width, height);
+
+}
+
+void Application::resizeWindow(int width, int height)
+{
+    glViewport(0, 0, width, height);
+    Demo::get()->resizeWindow(width, height);
+}
+
 void Application::init()
 {
     // initialize GLFW and create window, setup callbacks
@@ -85,8 +99,8 @@ void Application::init()
     if( !glfwInit() )
         error::throw_ex("unable to initialize GLFW",__FILE__,__LINE__);
 
-    int windowWidth = global::par().getInt("windowWidth");
-    int windowHeight = global::par().getInt("windowHeight");
+    int windowWidth = 1920;
+    int windowHeight = 1080;
     string windowTitle = global::par().getString("windowTitle");
 
     m_window = glfwCreateWindow(windowWidth, windowHeight, windowTitle.c_str(), nullptr, nullptr);
@@ -103,10 +117,10 @@ void Application::init()
         error::throw_ex("unable to initialize GLEW",__FILE__,__LINE__);
 
     glfwSetKeyCallback(m_window,key_callback);
-    //glfwSetCursorPosCallback(m_window, cursor_pos_callback);
+    glfwSetCursorPosCallback(m_window, cursor_pos_callback);
+    glfwSetFramebufferSizeCallback(m_window,framebuffer_size_callback);
 
     glViewport(0, 0, windowWidth, windowHeight);
-
 }
 
 void Application::run()
@@ -177,10 +191,41 @@ void Application::mainLoop()
         FrameCaptor::get()->release();
 }
 
+void Application::getWindowSize(int &width, int &height) const
+{
+    glfwGetWindowSize(m_window, &width, &height);
+}
+
 void Application::setCursorPos(float x, float y)
 {
     m_cursorX = x;
     m_cursorY = y;
+}
+
+void Application::getCursorPos(float &x, float &y) const
+{
+    x = m_cursorX;
+    y = m_cursorY;
+}
+
+void Application::getCursorPos01(float &x, float &y) const
+{
+    int width = -1, height = -1;
+    getWindowSize(width, height);
+    x = m_cursorX/float(width);
+    y = m_cursorY/float(height);
+}
+
+void Application::setCursorRay(float *origin, float *dir)
+{
+    memcpy(m_cursorRayOrigin,origin,4*sizeof(float));
+    memcpy(m_cursorRayDir,dir,4*sizeof(float));
+}
+
+void Application::getCursorRay(float *origin, float *dir) const
+{
+    memcpy(origin,m_cursorRayOrigin,4*sizeof(float));
+    memcpy(dir,m_cursorRayDir,4*sizeof(float));
 }
 
 float Application::getRealTime()
@@ -198,9 +243,9 @@ void Application::setupLorenzAttractor()
     m_simTime = 0.f;
     m_simDeltaTime = 1.f/60.f;
 
-    int nX = 256;
-    int nY = 256;
-    int nZ = 256;
+    int nX = 200;
+    int nY = 200;
+    int nZ = 200;
     int nParticles = nX*nY*nZ;
 
     global::par().setInt("nParticles",nParticles);
@@ -257,7 +302,7 @@ void Application::setupLorenzAttractor()
                 for( int k = 0; k < nZ; ++k )
                 {
                     int idx = (i*nY+j)*nZ+k;
-                    lifetime[idx] = 6.f+32.f*float(rand())/RAND_MAX;
+                    lifetime[idx] = 0.f+60.f*float(rand())/RAND_MAX;
                     idx *= 4;
                     pos[idx+0] = side*float(2*i-nX)/float(nX);
                     pos[idx+1] = side*float(2*j-nY)/float(nY);

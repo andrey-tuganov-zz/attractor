@@ -22,12 +22,16 @@
 #include "error.h"
 #include "global.h"
 
+#include "Application.h"
+
 //using namespace cv;
 using namespace std;
 
 OpenCVFrameCaptor::OpenCVFrameCaptor() : FrameCaptor ()
 {
     m_writer = nullptr;
+    m_windowWidth = -1;
+    m_windowHeight = -1;
 }
 
 OpenCVFrameCaptor::~OpenCVFrameCaptor()
@@ -37,12 +41,11 @@ OpenCVFrameCaptor::~OpenCVFrameCaptor()
 
 void OpenCVFrameCaptor::init()
 {
-    int windowWidth = global::par().getInt("windowWidth");
-    int windowHeight = global::par().getInt("windowHeight");
+    Application::get()->getWindowSize(m_windowWidth, m_windowHeight);
 
     CvSize size;
-    size.width = windowWidth;
-    size.height = windowHeight;
+    size.width = m_windowWidth;
+    size.height = m_windowHeight;
     m_writer = new cv::VideoWriter(global::par().getString("exportFilename"), CV_FOURCC('H','F','Y','U'), 30.,  size);
 
     if ( m_writer == nullptr || !m_writer->isOpened() )
@@ -56,10 +59,7 @@ void OpenCVFrameCaptor::capture()
     if ( !m_writer )
         return;
 
-    int windowWidth = global::par().getInt("windowWidth");
-    int windowHeight = global::par().getInt("windowHeight");
-
-    cv::Mat frame = cv::Mat(windowHeight,windowWidth,CV_8UC3);
+    cv::Mat frame = cv::Mat(m_windowHeight,m_windowWidth,CV_8UC3);
     // TODO memory management to avoid constant reallocation
 
     if ( frame.empty() )

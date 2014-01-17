@@ -29,6 +29,9 @@ class OpenCVFrameCaptor: public FrameCaptor
     std::queue<cv::Mat> m_frames;
     cv::VideoWriter *m_writer;
 
+    int m_windowWidth;
+    int m_windowHeight;
+
     void __init();
     void __capture();
 

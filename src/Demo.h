@@ -42,6 +42,7 @@ public:
     virtual void render(float simTime) = 0;
     virtual void update() = 0;
     virtual void init() = 0;
+    virtual void resizeWindow(int width, int height) = 0;
 };
 
 #endif
