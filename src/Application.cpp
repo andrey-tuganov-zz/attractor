@@ -302,7 +302,7 @@ void Application::setupLorenzAttractor()
                 for( int k = 0; k < nZ; ++k )
                 {
                     int idx = (i*nY+j)*nZ+k;
-                    lifetime[idx] = 0.f+60.f*float(rand())/RAND_MAX;
+                    lifetime[idx] = 0.f+30.f*float(rand())/RAND_MAX;
                     idx *= 4;
                     pos[idx+0] = side*float(2*i-nX)/float(nX);
                     pos[idx+1] = side*float(2*j-nY)/float(nY);

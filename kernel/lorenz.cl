@@ -26,13 +26,13 @@ __kernel void kernelStep( __global float4 *posArray,
 	
 	float4 pos = posArray[gid];
 
-	const float lifetime = 60.;	
+	const float lifetime = 30.;	
 	
 	lifetimeArray[gid] -= deltaTime;	
 	if ( lifetimeArray[gid] < 0 )
 	{
 		lifetimeArray[gid] = lifetime;							
-		float r = 0.02*(((float)gid)/10000.+100.);		
+		float r = 0.005*(((float)gid)/10000.+100.);		
 		int num = gid%10000;
 		float phi = 0.02*3.14159*(gid%100);
 		num = num/100;		
@@ -48,10 +48,17 @@ __kernel void kernelStep( __global float4 *posArray,
 	
 	colorArray[gid] = baseColor + 0.1*fast_normalize(vel);
 	
-	const float decayTime = 0.5;
+	const float decayTime = 1.0;
+	const float birthTime = 1.0;
 		
 	if ( lifetimeArray[gid] < decayTime )
 	{
 		colorArray[gid].w *= lifetimeArray[gid]/decayTime;
-	}	 
+	}
+	else if ( lifetimeArray[gid] > lifetime - birthTime )
+	{
+		float tmp = (lifetime-lifetimeArray[gid])/birthTime;
+		colorArray[gid].w *= 2.0*(1.0-4.0*(tmp-0.5)*(tmp-0.5)) + tmp;
+	}
+		 
 }

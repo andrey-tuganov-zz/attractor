@@ -230,7 +230,7 @@ void LorenzAttractorDemo::render(float simTime)
     // set MVP
 
     float eyeDist = 100.f;
-    float eyeAzimuth = simTime*0.1f;
+    float eyeAzimuth = simTime*0.4f;
     float eyeZ = 25.f;
     glm::vec3 eye(eyeDist*cos(eyeAzimuth),eyeDist*sin(eyeAzimuth),eyeZ);
     //glm::vec3 eye(eyeDist,0.f,0.f);
